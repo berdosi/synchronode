@@ -33,29 +33,29 @@ exclude (Array<RegExp>): an array of regular expressions specifying the files to
 ### Example: top-level master
 ```JSON
 {
-	port: 80,
-	master: "",
-	shareRoot: ".",
-	folders: []
+	"port": 80,
+	"master": "",
+	"shareRoot": ".",
+	"folders": []
 }
 ```
 
 ### Example: slave
 ```JSON
 {
-	port: 80,
-	master: "example.com/synchronode",
-	shareRoot: "/home/billg/Documents",
-	folders: [
+	"port": 80,
+	"master": "example.com/synchronode",
+	"shareRoot": "/home/billg/Documents",
+	"folders": [
 		{
-			path: "/ActivityReports",
-			permissions: "r",
-			visibility: "swarm",
-			include: [ 
+			"path": "/ActivityReports",
+			"permissions": "r",
+			"visibility": "swarm",
+			"include": [ 
 				/.*.doc.?/, 
 				/.*.gif/
 			], 
-			exclude: [ 
+			"exclude": [ 
 				/.*porn.*/ 
 			] 
 		}
