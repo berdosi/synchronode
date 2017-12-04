@@ -52,11 +52,11 @@ exclude (Array<RegExp>): an array of regular expressions specifying the files to
 			"permissions": "r",
 			"visibility": "swarm",
 			"include": [ 
-				/.*.doc.?/, 
-				/.*.gif/
+				".*.doc.?", 
+				".*.gif"
 			], 
 			"exclude": [ 
-				/.*porn.*/ 
+				".*porn.*" 
 			] 
 		}
 	]
