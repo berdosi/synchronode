@@ -36,18 +36,18 @@ module.exports = function slaveConnections(args) {
                     const messageFromSlave = JSON.parse(message);
                     const token = messageFromSlave.token;
                     const action = messageFromSlave.action;
+                    const sendMessage = require("../utils/socketSender")(ws);
 
                     if (action) return; // this code only handles registration into the state
 
                     if ((!token) || !state.pendingTokens.has(token)) {
-                        ws.send(
-                            JSON.stringify(
-                                {
-                                    error: "No token in request or token unavailable for registration."
-                                }));
+                        sendMessage({
+                            error: "No token in request or token unavailable for registration."
+                        });
                     } else {
                         state.pendingTokens.delete(token);
                         state.slaveSockets.set(token, ws);
+                        sendMessage({ status: "Connection open." });
                         logger.log("new socket opened", token, ws);
                     }
                 } catch (e) {
