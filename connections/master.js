@@ -27,12 +27,12 @@ module.exports = function connectMaster(args) {
             state.token = responseObject.token;
 
             // acknowledge the token by opening a WebSocket to the master
-            const ws = new WebSocket("wss://" + master + "/ws");
+            const ws = new WebSocket("wss://" + master + "/ws/");
             state.masterSocket = ws;
 
             ws.on("open", function open() {
                 logger.log("socket open, sending back token via WebSocket");
-                ws.send(JSON.parse({ token: responseObject.token }));
+                ws.send(JSON.stringify({ token: responseObject.token }));
             });
 
             ws.on("message", function incoming(message) {
