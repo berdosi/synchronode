@@ -26,10 +26,14 @@ module.exports = function slaveConnections(args) {
         state.pendingTokens.add(slaveConnectionId);
         res.type("json");
         res.end(JSON.stringify({ token: slaveConnectionId }));
+
+        logger.log("request for token fulfilled with", slaveConnectionId);
     });
 
     app.ws("/ws", function (ws, req) {
+        logger.log("ws endpoint initialized", ws, req)
         ws.on("message", function (message) {
+            logger.log("websocket message", message);
             if (typeof message === "string") {
                 // if it is a string, it is encapsulated in JSON
                 try {
