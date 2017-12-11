@@ -28,7 +28,7 @@ module.exports = function slaveConnections(args) {
         res.end(JSON.stringify({ token: slaveConnectionId }));
     });
 
-    app.ws("/", function (ws, req) {
+    app.ws("/ws", function (ws, req) {
         ws.on("message", function (message) {
             if (typeof message === "string") {
                 // if it is a string, it is encapsulated in JSON
