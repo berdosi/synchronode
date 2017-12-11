@@ -36,7 +36,9 @@ module.exports = function slaveConnections(args) {
                     const messageFromSlave = JSON.parse(message);
                     const token = messageFromSlave.token;
                     const action = messageFromSlave.action;
-                    const sendMessage = require("../utils/socketSender")(ws);
+
+                    const socketSenderFactory = require("../utils/socketSender.js");
+                    const sendMessage = socketSenderFactory(ws);
 
                     if (action) return; // this code only handles registration into the state
 
