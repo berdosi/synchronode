@@ -30,7 +30,7 @@ module.exports = function slaveConnections(args) {
         logger.log("request for token fulfilled with", slaveConnectionId);
     });
 
-    app.ws("/ws", function (ws, req) {
+    app.ws("/ws/", function (ws, req) {
         logger.log("ws endpoint initialized", ws, req)
         ws.on("message", function (message) {
             logger.log("websocket message", message);
