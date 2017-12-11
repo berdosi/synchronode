@@ -1,30 +1,41 @@
-/** Handle the connections from clients (via browser) 
+/** Clients module
+ * @module connections/clients
+ */
+
+/** Handle the connections from clients (e.g. requests via browser) 
  * - clients communicate a token along with their requests
  * - if the token exists, Master gets the data from the websocket.
-*/
-function clientConnections(args) {
+ * 
+ */
+module.exports = function clientConnections(args) {
     const logger = args.logger;
     logger.log("to implement: listening for clients");
     const app = args.app;
 
+    /** generate UUID */
+    const uuid = require("../util/uuid");
+
     /** @type {State} */
     const state = args.state;
 
-    // handle GET and POST endpoints
-    /* /browse/hostId
-    
-    */
-    app.get("/browse/:hostId", (req, res, next) => {
+    app.get("/browse/:hostId/:path", (req, res, next) => {
         logger.log(req, res, next);
         const hostId = req.params["hostId"];
 
-        if (hostId !== "swarm")
-            if (state.slaveSockets.has(hostId)) {
-                res.send("found it");
-            }
-            else res.send("not found");
+        if (state.slaveSockets.has(hostId)) {
+            // there is a slave with this ID
+
+            /** identify the request when the slave's websocket answers
+             * @type {string}
+             */
+            const requestId = uuid();
+            state.slaveSockets.get(hostId).send(JSON.stringify({
+                action: "browse",
+                requestId: requestId,
+                path: req.params["path"]
+            }));
+            state.pendingRequests.set(requestId, res);
+        }
+        else res.send("not found");
     })
-
 }
-
-module.exports = clientConnections;

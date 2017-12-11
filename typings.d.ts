@@ -18,7 +18,16 @@ interface State {
    * @type {WebSocket}
    * @memberof State
    */
-  masterSocket: WebSocket // connection to the master
+  masterSocket: WebSocket,
+  /** Maps request IDs to Express Requests. 
+   * When a HTTP request is received, a request is sent to the referenced websocket.
+   * Upon return, the websocket will include this request ID so that it can be 
+   * connected with the original request.
+   * 
+   * @type {Map<string, Express.Request>}
+   * @memberof State
+   */
+  pendingRequests: Map<string, Express.Request>
 }
 
 interface Config {
