@@ -16,18 +16,9 @@ module.exports = function connectMaster(args) {
     const logger = args.logger;
     const state = args.state;
 
-    // get own token and put it into the state. Will be shared with Clients. 
-    /** @type {RequestOptions} */
-    const options = {
-        host: master,
-        path: master + "/register",
-        method: "GET",
-        headers: {}
-    };
-
-    const req = https.request(options, (response) => {
+    const req = https.request("https://" + master + "/register", (response) => {
         logger.info("status", response.statusCode);
-        const data = "";
+        let data = "";
         response.on("data", (incoming) => { data += incoming; })
         response.on("end", () => {
             // store the token received from the master
@@ -36,7 +27,7 @@ module.exports = function connectMaster(args) {
             state.token = responseObject.token;
 
             // acknowledge the token by opening a WebSocket to the master
-            const ws = new WebSocket("wss://" + host + "/ws");
+            const ws = new WebSocket("wss://" + master + "/ws");
             state.masterSocket = ws;
 
             ws.on("open", function open() {
@@ -55,4 +46,6 @@ module.exports = function connectMaster(args) {
         logger.error(
             `Master unavailable: instance will be working as a standalone master node. Problem with request: ${e.message}`);
     });
+
+    req.end();
 }
