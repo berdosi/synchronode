@@ -1,10 +1,13 @@
-/** @module master
- * Handle the connections with the server 
+/** Master module
+ * @module connections/master
+ */
+
+/** Handle the connections with the server 
  * - logging in upon start
  *     - get hostId
  *     - open websocket with that hostId
  * - listen for requests and answer them */
-function connectMaster(args) {
+module.exports = function connectMaster(args) {
     "use strict";
     const https = require("https");
     const master = args.config.master; // URL of the master to connect to, without protocol
@@ -18,7 +21,7 @@ function connectMaster(args) {
     const options = {
         host: master.replace(/\/.*/, ""),
         port: port,
-        path: master.replace(/[^/]*\//, "/"),
+        path: master.replace(/[^/]*\//, "/register"),
         method: "GET",
         headers: {}
     };
@@ -40,5 +43,3 @@ function connectMaster(args) {
             `Master unavailable: instance will be working as a standalone master node. Problem with request: ${e.message}`);
     });
 }
-
-module.exports = connectMaster;

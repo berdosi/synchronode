@@ -1,14 +1,12 @@
-/** generate UUID
- * @return {string}
-*/
-const uuid = require("../util/uuid");
+/** Slaves module
+ * @module connections/slaves
+ */
 
-/**
- * Handle the connections from slaves (other synchronode instances serving files) 
+/** Handle the connections from slaves (other synchronode instances serving files) 
  * - assign tokens
  * - listen for connections from them on websockets
-*/
-function slaveConnections(args) {
+ */
+module.exports = function slaveConnections(args) {
     /** @type {State} */
     const state = args.state;
     const app = args.app;
@@ -21,13 +19,15 @@ function slaveConnections(args) {
     app.get("/register", (req, res) => {
         // TODO : register in state.slaveSockets 
 
+        /** generate UUID */
+        const uuid = require("../util/uuid");
+
         const slaveConnectionId = uuid();
         state.pendingTokens.add(slaveConnectionId);
         res.type("json");
         res.end(JSON.stringify({ token: slaveConnectionId }));
     });
 
-    // TODO : listen for icoming connections from slaves
     app.ws("/", function (ws, req) {
         ws.on("message", function (message) {
             if (typeof message === "string") {
@@ -35,8 +35,16 @@ function slaveConnections(args) {
                 try {
                     const messageFromSlave = JSON.parse(message);
                     const token = messageFromSlave.token;
+                    const action = messageFromSlave.action;
+
+                    if (action) return; // this code only handles registration into the state
+
                     if ((!token) || !state.pendingTokens.has(token)) {
-                        // there is no valid token in the request
+                        ws.send(
+                            JSON.stringify(
+                                {
+                                    error: "No token in request or token unavailable for registration."
+                                }));
                     } else {
                         state.pendingTokens.delete(token);
                         state.slaveSockets.set(token, ws);
@@ -50,5 +58,3 @@ function slaveConnections(args) {
         });
     });
 }
-
-module.exports = slaveConnections;
