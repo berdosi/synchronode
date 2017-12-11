@@ -24,4 +24,4 @@ slaveConnection({ app, config, state, logger });
 clientConnection({ app, config, state, logger });
 
 // listen for requests (as master as well as a local webserver serving the swarm's files)
-app.listen(config.port);
+app.listen(config.port, "localhost");
