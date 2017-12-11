@@ -13,16 +13,14 @@ module.exports = function connectMaster(args) {
     const WebSocket = require("ws");
 
     const master = args.config.master; // URL of the master to connect to, without protocol
-    const port = args.config.port;
     const logger = args.logger;
     const state = args.state;
 
     // get own token and put it into the state. Will be shared with Clients. 
     /** @type {RequestOptions} */
     const options = {
-        host: master.replace(/\/.*/, ""),
-        port: port,
-        path: master.replace(/[^/]*\//, "/register"),
+        host: master,
+        path: master + "/register",
         method: "GET",
         headers: {}
     };
@@ -38,7 +36,7 @@ module.exports = function connectMaster(args) {
             state.token = responseObject.token;
 
             // acknowledge the token by opening a WebSocket to the master
-            const ws = new WebSocket("wss://" + host + ":" + port + "/ws");
+            const ws = new WebSocket("wss://" + host + "/ws");
             state.masterSocket = ws;
 
             ws.on("open", function open() {
