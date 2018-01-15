@@ -25,7 +25,7 @@ module.exports = function clientConnections(args) {
     state.pendingRequests = new Map();
 
     app.get("/browse/:hostId/:path", (req, res, next) => {
-        logger.log(req, res, next);
+        logger.log("new request", req.params);
         const hostId = req.params["hostId"];
 
         if (state.slaveSockets.has(hostId)) {
@@ -34,6 +34,7 @@ module.exports = function clientConnections(args) {
             /** identify the request when the slave's websocket answers
              * @type {string}
              */
+            logger.log("has hostId");
             const requestId = uuid();
             state.slaveSockets.get(hostId).send(JSON.stringify({
                 action: "browse",

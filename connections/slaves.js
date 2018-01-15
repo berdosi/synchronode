@@ -47,6 +47,13 @@ module.exports = function slaveConnections(args) {
                     if ((!token) || !state.pendingTokens.has(token)) {
                         // TODO refactor this
                         if (messageFromSlave.requestId) {
+
+                            logger.log(
+                                "there is a requestId in the message sending to the responseObject",
+                                messageFromSlave,
+                                state.pendingRequests
+                                    .get(messageFromSlave.requestId));
+
                             state.pendingRequests
                                 .get(messageFromSlave.requestId)
                                 .end(JSON.stringify(messageFromSlave));
@@ -67,7 +74,7 @@ module.exports = function slaveConnections(args) {
                     logger.error("Malformed WebSocket string request - ", e)
                 }
             }
-            logger.log(message);
+            //logger.log(message);
         });
     });
 }
