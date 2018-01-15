@@ -45,9 +45,18 @@ module.exports = function slaveConnections(args) {
                     if (action) return; // this code only handles registration into the state
 
                     if ((!token) || !state.pendingTokens.has(token)) {
-                        sendMessage({
-                            error: "No token in request or token unavailable for registration."
-                        });
+                        // TODO refactor this
+                        if (messageFromSlave.requestId) {
+                            state.pendingRequests
+                                .get(messageFromSlave.requestId)
+                                .end(JSON.stringify(messageFromSlave));
+
+                        } else {
+                            sendMessage({
+                                error: "No token in request or token unavailable for registration."
+                            });
+                        }
+
                     } else {
                         state.pendingTokens.delete(token);
                         state.slaveSockets.set(token, ws);

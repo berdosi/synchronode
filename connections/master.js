@@ -37,6 +37,11 @@ module.exports = function connectMaster(args) {
 
             ws.on("message", function incoming(message) {
                 logger.log("message from master", message);
+                // if the message has a request ID, fulfill it.
+                // currently we are only adding some hailing from the slave.
+                if (message.requestId) {
+                    ws.send(JSON.stringify(Object.assign({}, message, { slaveHail: "hello from slave" })));
+                }
             })
 
         })

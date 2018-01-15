@@ -18,6 +18,12 @@ module.exports = function clientConnections(args) {
     /** @type {State} */
     const state = args.state;
 
+    /** Keep track on to-be-fulfilled requests. 
+     * When a message arrrives from one of the slaves, its requestId is looked for in this Map.
+     * The referenced request is fulfilled with the client's message.
+     * @type {Map<String,ExpressRequest>} */
+    state.pendingRequests = new Map();
+
     app.get("/browse/:hostId/:path", (req, res, next) => {
         logger.log(req, res, next);
         const hostId = req.params["hostId"];
