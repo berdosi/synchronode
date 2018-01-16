@@ -23,7 +23,6 @@ module.exports = function connectMaster(args) {
         response.on("end", () => {
             // store the token received from the master
             const responseObject = JSON.parse(data);
-            logger.info("response:", responseObject);
             state.token = responseObject.token;
 
             // acknowledge the token by opening a WebSocket to the master
@@ -42,7 +41,6 @@ module.exports = function connectMaster(args) {
                 // currently we are only adding some hailing from the slave.
                 if (parseMessage.requestId) {
                     const responseToMaster = Object.assign({}, parseMessage, { slaveHail: "hello from slave" });
-                    logger.log()
                     ws.send(JSON.stringify(responseToMaster));
                 }
             })

@@ -47,9 +47,7 @@ module.exports = function slaveConnections(args) {
                             if (messageFromSlave.requestId) {
                                 logger.log(
                                     "there is a requestId in the message sending to the responseObject",
-                                    messageFromSlave,
-                                    state.pendingRequests
-                                        .get(messageFromSlave.requestId));
+                                    messageFromSlave);
 
                                 state.pendingRequests
                                     .get(messageFromSlave.requestId)
@@ -68,7 +66,7 @@ module.exports = function slaveConnections(args) {
                         state.pendingTokens.delete(token);
                         state.slaveSockets.set(token, ws);
                         sendMessage({ status: "Connection open." });
-                        logger.log("new socket opened", token, ws);
+                        logger.log("new socket opened", token);
                     }
                 } catch (e) {
                     logger.error("Malformed WebSocket string request - ", e)
