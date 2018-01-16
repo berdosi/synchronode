@@ -42,29 +42,29 @@ module.exports = function slaveConnections(args) {
                     const action = messageFromSlave.action;
                     const sendMessage = require("../util/socketSender.js")(ws);
 
-                    if (action) return; // this code only handles registration into the state
+                    if (action) { // slave answers a request (contains original action)
+                        if (action === "browse") {
+                            if (messageFromSlave.requestId) {
+                                logger.log(
+                                    "there is a requestId in the message sending to the responseObject",
+                                    messageFromSlave,
+                                    state.pendingRequests
+                                        .get(messageFromSlave.requestId));
 
-                    if ((!token) || !state.pendingTokens.has(token)) {
-                        // TODO refactor this
-                        if (messageFromSlave.requestId) {
-
-                            logger.log(
-                                "there is a requestId in the message sending to the responseObject",
-                                messageFromSlave,
                                 state.pendingRequests
-                                    .get(messageFromSlave.requestId));
+                                    .get(messageFromSlave.requestId)
+                                    .end(JSON.stringify(messageFromSlave));
 
-                            state.pendingRequests
-                                .get(messageFromSlave.requestId)
-                                .end(JSON.stringify(messageFromSlave));
-
-                        } else {
-                            sendMessage({
-                                error: "No token in request or token unavailable for registration."
-                            });
+                            }
                         }
+                    }
+                    else if ((!token) || !state.pendingTokens.has(token)) {
+                        // TODO refactor this
 
-                    } else {
+                        sendMessage({
+                            error: "No token in request or token unavailable for registration."
+                        });
+                    } else { // there is a token to be registered
                         state.pendingTokens.delete(token);
                         state.slaveSockets.set(token, ws);
                         sendMessage({ status: "Connection open." });

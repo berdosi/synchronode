@@ -36,11 +36,12 @@ module.exports = function connectMaster(args) {
             });
 
             ws.on("message", function incoming(message) {
-                logger.log("message from master", message);
+                const parseMessage = JSON.parse(message);
+                logger.log("message from master", parseMessage);
                 // if the message has a request ID, fulfill it.
                 // currently we are only adding some hailing from the slave.
-                if (message.requestId) {
-                    const responseToMaster = Object.assign({}, message, { slaveHail: "hello from slave" });
+                if (parseMessage.requestId) {
+                    const responseToMaster = Object.assign({}, parseMessage, { slaveHail: "hello from slave" });
                     logger.log()
                     ws.send(JSON.stringify(responseToMaster));
                 }
