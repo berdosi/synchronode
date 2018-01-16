@@ -65,7 +65,7 @@ module.exports = function slaveConnections(args) {
                     } else { // there is a token to be registered
                         state.pendingTokens.delete(token);
                         state.slaveSockets.set(token, ws);
-                        sendMessage({ status: "Connection open." });
+                        sendMessage({ status: "Connection open.", token: token });
                         logger.log("new socket opened", token);
                     }
                 } catch (e) {
