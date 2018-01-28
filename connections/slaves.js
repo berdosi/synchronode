@@ -31,7 +31,7 @@ module.exports = function slaveConnections(args) {
     });
 
     app.ws("/ws/", function (ws, req) {
-        logger.log("ws endpoint initialized", ws, req)
+        //logger.log("ws endpoint initialized", ws, req)
         ws.on("message", function (message) {
             logger.log("websocket message", message);
             if (typeof message === "string") {
@@ -72,7 +72,6 @@ module.exports = function slaveConnections(args) {
                     logger.error("Malformed WebSocket string request - ", e)
                 }
             }
-            //logger.log(message);
         });
     });
 }

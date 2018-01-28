@@ -24,9 +24,10 @@ module.exports = function clientConnections(args) {
      * @type {Map<String,ExpressRequest>} */
     state.pendingRequests = new Map();
 
-    app.get("/browse/:hostId/:path", (req, res, next) => {
+    app.get("/browse/*", (req, res, next) => {
         logger.log("new request", req.params);
-        const hostId = req.params["hostId"];
+        const hostId = req.params[0].replace(/\/.*/, "");
+        const requestPath = req.params[0].replace(/[^\/]+\//, "");
 
         if (state.slaveSockets.has(hostId)) {
             // there is a slave with this ID
@@ -39,7 +40,7 @@ module.exports = function clientConnections(args) {
             state.slaveSockets.get(hostId).send(JSON.stringify({
                 action: "browse",
                 requestId: requestId,
-                path: req.params["path"]
+                path: requestPath
             }));
             state.pendingRequests.set(requestId, res);
         }
