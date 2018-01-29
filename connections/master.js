@@ -10,6 +10,7 @@
 module.exports = function connectMaster(args) {
     "use strict";
     const https = require("https");
+    const fs = require("fs");
     const WebSocket = require("ws");
 
     const master = args.config.master; // URL of the master to connect to, without protocol
@@ -40,8 +41,21 @@ module.exports = function connectMaster(args) {
                 // if the message has a request ID, fulfill it.
                 // currently we are only adding some hailing from the slave.
                 if (parseMessage.requestId) {
-                    const responseToMaster = Object.assign({}, parseMessage, { slaveHail: "hello from slave" });
-                    ws.send(JSON.stringify(responseToMaster));
+
+                    // TODO authentication here .
+                    // currently we're just listing directorycontents to whomever knows the token.
+                    const path = parseMessage.requestPath;
+                    if (path)
+                        fs.readdir(requestPath, (err, response) => {
+                            let responseToMaster;
+                            if (err) responseToMaster = Object.assign({}, parseMessage, { slaveHail: "hello from slave", error: err });
+                            else responseToMaster = Object.assign({}, parseMessage, { slaveHail: "hello from slave", listing: response });
+
+
+                            ws.send(JSON.stringify(responseToMaster));
+                        })
+                    else ws.send(JSON.stringify(Object.assign({}, parseMessage, { slaveHail: "no path found in request" })));
+
                 }
             })
 
