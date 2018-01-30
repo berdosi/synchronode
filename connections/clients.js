@@ -11,6 +11,9 @@ module.exports = function clientConnections(args) {
     const logger = args.logger;
     logger.log("to implement: listening for clients");
     const app = args.app;
+    const express = args.express;
+
+    app.use(express.static("static")); // serve files from ./static 
 
     /** generate UUID */
     const uuid = require("../util/uuid");

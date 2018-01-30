@@ -11,8 +11,6 @@ let expressWs = require("express-ws");
 expressWs = expressWs(express());
 const app = expressWs.app;
 
-app.use(express.static("static")); // serve files from ./static 
-
 const masterConnection = require("./connections/master.js");
 const slaveConnection = require("./connections/slaves.js");
 const clientConnection = require("./connections/clients.js");
@@ -21,7 +19,7 @@ const clientConnection = require("./connections/clients.js");
 if (config.master) masterConnection({ config, state, logger });
 
 slaveConnection({ app, config, state, logger });
-clientConnection({ app, config, state, logger });
+clientConnection({ app, config, state, logger, express });
 
 // listen for requests (as master as well as a local webserver serving the swarm's files)
 app.listen(config.port, "localhost");
