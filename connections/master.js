@@ -72,7 +72,6 @@ module.exports = function connectMaster(args) {
 
                                 });
                             }
-                            console.log(err, files.isFile(), files.isDirectory())
                         })
                     }
                     else ws.send(JSON.stringify(Object.assign({}, parseMessage, { slaveHail: "no path found in request" })));
