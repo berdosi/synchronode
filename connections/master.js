@@ -45,7 +45,7 @@ module.exports = function connectMaster(args) {
                     // TODO authentication here .
                     // currently we're just listing directorycontents to whomever knows the token.
                     // find directories from the config.shareRoot 
-                    const path = parseMessage.path;
+                    const path = config.shareRoot + "/" + parseMessage.path.replace("..", "");
                     if (path)
                         fs.readdir(path, (err, response) => {
                             let responseToMaster;
