@@ -16,6 +16,7 @@ module.exports = function connectMaster(args) {
     const master = args.config.master; // URL of the master to connect to, without protocol
     const logger = args.logger;
     const state = args.state;
+    const magic = require("magic-number");
 
     const req = https.request("https://" + master + "/register", (response) => {
         logger.info("status", response.statusCode);
@@ -42,19 +43,38 @@ module.exports = function connectMaster(args) {
                 // currently we are only adding some hailing from the slave.
                 if (parseMessage.requestId) {
 
-                    // TODO authentication here .
-                    // currently we're just listing directorycontents to whomever knows the token.
-                    // find directories from the config.shareRoot 
-                    const path = args.config.shareRoot + "/" + parseMessage.path.replace("..", "");
-                    if (path)
-                        fs.readdir(path, (err, response) => {
-                            let responseToMaster;
-                            if (err) responseToMaster = Object.assign({}, parseMessage, { slaveHail: "hello from slave", error: err });
-                            else responseToMaster = Object.assign({}, parseMessage, { slaveHail: "hello from slave", listing: response });
+                    if (parseMessage.path) {
+                        // TODO authentication here .
+                        // currently we're just listing directorycontents to whomever knows the token.
+                        // find directories from the config.shareRoot 
+                        const path = args.config.shareRoot + "/" + parseMessage.path.replace("..", "");
+                        fs.stat(path, (err, file) => {
+                            if (err) ws.send(JSON.stringify(Object.assign({}, parseMessage, { slaveHail: "error when acccessing path" })))
+                            else {
+                                if (file.isDirectory())
+                                    fs.readdir(path, (err, response) => {
+                                        let responseToMaster;
+                                        if (err) responseToMaster = Object.assign({}, parseMessage, { error: err });
+                                        else responseToMaster = Object.assign({}, parseMessage, { listing: response });
 
+                                        ws.send(JSON.stringify(responseToMaster));
+                                    });
+                                else fs.readFile(path, (err, response) => {
+                                    if (err) responseToMaster = Object.assign({}, parseMessage, { error: err });
+                                    else responseToMaster = Object.assign(
+                                        {},
+                                        parseMessage,
+                                        {
+                                            fileContents: response.toString("base64"),
+                                            mimeType: magic.detectFile(path)
+                                        });
+                                    ws.send(JSON.stringify(responseToMaster));
 
-                            ws.send(JSON.stringify(responseToMaster));
+                                });
+                            }
+                            console.log(err, files.isFile(), files.isDirectory())
                         })
+                    }
                     else ws.send(JSON.stringify(Object.assign({}, parseMessage, { slaveHail: "no path found in request" })));
 
                 }
