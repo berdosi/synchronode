@@ -43,7 +43,7 @@ module.exports = function connectMaster(args) {
                 // currently we are only adding some hailing from the slave.
                 if (parseMessage.requestId) {
 
-                    if (parseMessage.path) {
+                    if (parseMessage.path !== undefined) {
                         // TODO authentication here .
                         // currently we're just listing directorycontents to whomever knows the token.
                         // find directories from the config.shareRoot 
