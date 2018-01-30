@@ -11,11 +11,9 @@
     const dom = {
         dirlisting: document.getElementById("dirlisting")
     };
-    document.getElementById("setSlave").addEventListener("click", function () {
-        state.slaveId = document.getElementById("slaveId").value;
 
-        // 
-        fetch(`/browse/${state.slaveId}/`)
+    const listDir = function (path) {
+        fetch(path)
             .then(function (r) { return r.json() })
             .then(function (responseJson) {
                 console.info("responseJson", responseJson);
@@ -24,8 +22,17 @@
                     const t = document.createTextNode(element);
                     a.appendChild(t);
                     dom.dirlisting.appendChild(a);
+                    a.addEventListener("click", function () {
+                        listDir(path + t + "/");
+                    });
                 });
             })
+    };
+    document.getElementById("setSlave").addEventListener("click", function () {
+        state.slaveId = document.getElementById("slaveId").value;
+        listDir(`/browse/${state.slaveId}/`);
+        // 
+
     })
 
     console.log(state); // TODO remove from prod. :)
