@@ -47,6 +47,6 @@ module.exports = function clientConnections(args) {
             }));
             state.pendingRequests.set(requestId, res);
         }
-        else res.send("not found");
+        else res.send("{error: 'not found'}");
     })
 }

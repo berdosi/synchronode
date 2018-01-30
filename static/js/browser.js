@@ -17,13 +17,13 @@
             .then(function (r) { return r.json() })
             .then(function (responseJson) {
                 console.info("responseJson", responseJson);
-                responseJson.listing.forEach(function (element) {
+                responseJson.listing.forEach(function (itemName) {
                     const a = document.createElement("a");
-                    const t = document.createTextNode(element);
+                    const t = document.createTextNode(itemName);
                     a.appendChild(t);
                     dom.dirlisting.appendChild(a);
                     a.addEventListener("click", function () {
-                        listDir(path + t + "/");
+                        listDir(path + itemName + "/");
                     });
                 });
             })
