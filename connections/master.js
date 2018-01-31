@@ -47,7 +47,7 @@ module.exports = function connectMaster(args) {
                         // TODO authentication here .
                         // currently we're just listing directorycontents to whomever knows the token.
                         // find directories from the config.shareRoot 
-                        const path = args.config.shareRoot + "/" + parseMessage.path.replace("..", "");
+                        const path = (args.config.shareRoot + "/" + parseMessage.path.replace("..", "")).replace(/\/$/, "");
                         fs.stat(path, (err, file) => {
                             if (err) ws.send(JSON.stringify(Object.assign({}, parseMessage, { slaveHail: "error when acccessing path" })))
                             else {
@@ -59,7 +59,7 @@ module.exports = function connectMaster(args) {
 
                                         ws.send(JSON.stringify(responseToMaster));
                                     });
-                                else fs.readFile(path.replace(/\/$/, ""), (err, response) => {
+                                else fs.readFile(path, (err, response) => {
                                     if (err) responseToMaster = Object.assign({}, parseMessage, { error: err });
                                     else responseToMaster = Object.assign(
                                         {},
