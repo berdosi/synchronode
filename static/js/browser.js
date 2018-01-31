@@ -33,6 +33,7 @@
                     a.href = `data:${responseJson.mimeType};base64,${responseJson.fileContents}`;
                     console.log(a, responseJson);
                     document.body.appendChild(a);
+                    a.download = responseJson.path.replace(/\/$/, "");
                     a.click();
                     document.body.removeChild(a);
                 }
