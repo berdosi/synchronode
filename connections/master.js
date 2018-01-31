@@ -51,9 +51,9 @@ module.exports = function connectMaster(args) {
                         fs.stat(path, (err, file) => {
                             if (err) ws.send(JSON.stringify(Object.assign({}, parseMessage, { slaveHail: "error when acccessing path" })))
                             else {
+                                let responseToMaster;
                                 if (file.isDirectory())
                                     fs.readdir(path, (err, response) => {
-                                        let responseToMaster;
                                         if (err) responseToMaster = Object.assign({}, parseMessage, { error: err });
                                         else responseToMaster = Object.assign({}, parseMessage, { listing: response });
 
