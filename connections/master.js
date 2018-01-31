@@ -59,7 +59,7 @@ module.exports = function connectMaster(args) {
 
                                         ws.send(JSON.stringify(responseToMaster));
                                     });
-                                else fs.readFile(path, (err, response) => {
+                                else fs.readFile(path.replace(/\/$/, ""), (err, response) => {
                                     if (err) responseToMaster = Object.assign({}, parseMessage, { error: err });
                                     else responseToMaster = Object.assign(
                                         {},
@@ -71,6 +71,7 @@ module.exports = function connectMaster(args) {
                                     ws.send(JSON.stringify(responseToMaster));
 
                                 });
+                                // todo error handling if neither
                             }
                         })
                     }
