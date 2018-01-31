@@ -43,7 +43,14 @@
         listDir(`/browse/${state.slaveId}/`);
         // 
 
+    });
+    document.getElementById("clearSlave").addEventListener("click", function () {
+
+        state.slaveId = document.getElementById("slaveId").value = "";
+
+        dom.dirlisting.innerHTML = "";
     })
+
 
     console.log(state); // TODO remove from prod. :)
 })()
