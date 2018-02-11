@@ -34,6 +34,9 @@ module.exports = function connectMaster(args) {
             ws.on("open", function open() {
                 logger.log("socket open, sending back token via WebSocket");
                 ws.send(JSON.stringify({ token: responseObject.token }));
+
+                // lame keep alive
+                setInterval(() => { ws.send(`{ action: "keep-alive", token: '${responseObject.token}' }`) }, 60000)
             });
 
             ws.on("message", function incoming(message) {
