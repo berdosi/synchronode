@@ -9,34 +9,18 @@ A slave communicates to the master via WebSocket the files available as well as 
 A client can send the master HTTP / WebDAV requests to access the shared files. 
 
 ## Configuration
-Configuration is defined a Node.js module, by default in `configuration.js`
+Configuration is defined as a Node.js module, by default in `config.js` in the application's root.
 
 ### Options
 port (number): The port to listen for incoming requests on.
 master (string): URL for the master of this instance. May be empty, if this is a Grandmaster.
 shareRoot (string): path to the folder relative to which the paths are shared
-folders (Array<Folder>): an array of the folders to share.
 
-A Folder object has these properties:
-
-path (string): path of the folder relative to shareRoot
-
-permissions (string): r/rw
-
-visibility ("peers"|"swarm"|"masters"): 
-if set to "masters", it will be visible merged with the master's content in case the master has a further master higher in the hierarchy. If "swarm", then the content is visible on the master's /swarm endpoint. If "peers" the content is only visible when the peer's own endpoint is opened.
-
-include (Array<RegExp>): an array of regular expressions specifying the files to share
-
-exclude (Array<RegExp>): an array of regular expressions specifying the files to omit from the shared ones 
-
-### Example: top-level master
+### Example: master
 ```JSON
 {
-	"port": 80,
-	"master": "",
+	"port": 3000,
 	"shareRoot": ".",
-	"folders": []
 }
 ```
 
@@ -44,45 +28,82 @@ exclude (Array<RegExp>): an array of regular expressions specifying the files to
 ```JSON
 {
 	"port": 80,
-	"master": "example.com/synchronode",
+	"master": "example.com",
 	"shareRoot": "/home/billg/Documents",
-	"folders": [
-		{
-			"path": "/ActivityReports",
-			"permissions": "r",
-			"visibility": "swarm",
-			"include": [ 
-				".*.doc.?", 
-				".*.gif"
-			], 
-			"exclude": [ 
-				".*porn.*" 
-			] 
-		}
-	]
 }
 ```
 
-## Endpoints
-Each node exposes these endpoints:
+### Example: Apache reverse proxy configuration on master
+Assuming Apache does the reverse proxying, these site configurations do the job. 
+We are assuming that :
+- HTTP requests are redirected to use HTTPS
+- Let's Encrypt is set up for the domain
+- The master is reachable via *example.org* via standard ports (80, 443)
+- The master's Synchronode instance is set up to use port 3000.  
 
-GET /browse : browse files shared by the peers.
+#### HTTP redirecting to HTTPS
+```
+<VirtualHost *:80>
+	# Redirect traffic to HTTPS
+	
+	ServerName example.org
+	ProxyRequests off
+
+	<Proxy *>
+		Order deny,allow
+		Allow from all
+	</Proxy>
+
+	ProxyPass /ws/ ws://localhost:3000/ws/
+	ProxyPassReverse /ws/ ws://localhost:3000/ws/
+
+	ProxyPass / http://localhost:3000/
+	ProxyPassReverse / http://localhost:3000/
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	RewriteEngine on
+	RewriteCond %{SERVER_NAME} =example.org
+	RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+
+#### HTTPS traffic redirected to localhost:3000 
+```
+<IfModule mod_ssl.c>
+  <VirtualHost *:443>
+    # 
+    
+    ServerName example.org
+    ProxyRequests off
+
+    <Proxy *>
+      Order deny,allow
+      Allow from all
+    </Proxy>
+
+    ProxyPass	/ws/ ws://localhost:3000/ws/
+    ProxyPassReverse /ws/ ws://localhost:3000/ws/
+
+    ProxyPass	/ http://localhost:3000/
+    ProxyPassReverse	/ http://localhost:3000/
+
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    SSLCertificateFile /etc/letsencrypt/live/example.org/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/example.org/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+  </VirtualHost>
+</IfModule>
+```
+
+## Endpoints
+The master exposes these endpoints:
 
 GET /browse/**hostId** : browse files shared by **hostId**
 
-GET /browse/swarm : browse all the files 
-
-GET /register : get a **hostId**
-
-GET /me : Show own host ID
-
-POST /login : log on to the master.
-
-PUT /list : update slave's list of files on master. 
-
-WSS /list/add : update slave's list of files on master. 
-
-WSS /list/delete : update slave's list of files on master. 
-
-## Further Plans
-* WebDAV may be implemented on /browse in the future 
+GET /register : get a **hostId** for a new slave.
