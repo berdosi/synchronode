@@ -3,32 +3,64 @@
 /* to polyfill
 - fetch
 */
-(function () {
+(function() {
     "use strict";
     const state = {
-        slaveId: undefined
+        slaveId: undefined,
+        ws: new WebSocket(),
     };
     const dom = {
-        dirlisting: document.getElementById("dirlisting")
+        dirlisting: document.getElementById("dirlisting"),
     };
 
-    const listDir = function (path) {
+    function makeIcon(fileName) {
+        const i = document.createElement("i");
+        i.classList.add("far");
+        i.classList.add(
+            (/\.(jpe?g|gif|bmp|xcf|png|svgz?)$/.test(fileName) && "fa-file-image")
+            || (/\.(mp3|ogg|wav|flac)$/.test(fileName) && "fa-file-audio")
+            || (/\.(gz|bz2|xz|zip|rar|tar)$/.test(fileName) && "fa-file-archive")
+            || (/\.(js|c|xml|html|py|pl|sh)$/.test(fileName) && "fa-file-code")
+            || (/\.(pdf)$/.test(fileName) && "fa-file-pdf")
+            || (/\.(ppt|pptx)$/.test(fileName) && "fa-file-powerpoint")
+            || (/\.(doc|docx)$/.test(fileName) && "fa-file-word")
+            || (/\.(xls|xlsx|xlsm|xla|csv)$/.test(fileName) && "fa-file-excel")
+            || (/\.(mpe?g|avi|mp4|mkv)$/.test(fileName) && "fa-file-video")
+            || (/\.(txt|nfo)$/.test(fileName) && "fa-file-alt")
+            || "fa-file");
+        return i;
+    }
+
+    function listDir(path) {
         fetch(path)
-            .then(function (r) { return r.json() })
-            .then(function (responseJson) {
+            .then(function(r) { return r.json(); })
+            .then(function(responseJson) {
                 dom.dirlisting.innerHTML = "";
                 console.info("responseJson", responseJson);
-                if (responseJson.listing)
-                    responseJson.listing.forEach(function (itemName) {
-                        const a = document.createElement("a");
-                        const t = document.createTextNode(itemName);
-                        a.appendChild(t);
-                        dom.dirlisting.appendChild(a);
-                        a.addEventListener("click", function () {
+                if (responseJson.listing) {
+                    responseJson.listing.forEach(function(itemName) {
+                        const itemRow = document.createElement("tr");
+                        const itemIconCell = document.createElement("td");
+                        const itemNameCell = document.createElement("td");
+                        const itemSizeCell = document.createElement("td");
+                        const itemDateCell = document.createElement("td");
+                        const itemNameText = document.createTextNode(itemName);
+                        const itemSizeText = document.createTextNode("");
+                        const itemDateText = document.createTextNode("");
+
+                        // note: this only works based on file/folder name.
+                        // So folder names ending witth valid extensions will be misinterpreted.
+                        itemIconCell.appendChild(makeIcon(itemName));
+                        itemNameCell.appendChild(itemNameText);
+                        itemSizeCell.appendChild(itemSizeText);
+                        itemDateCell.appendChild(itemDateText);
+
+                        dom.dirlisting.appendChild(itemRow);
+                        itemRow.addEventListener("click", function() {
                             listDir(path + itemName + "/");
                         });
                     });
-                else if (responseJson.fileContents) {
+                } else if (responseJson.fileContents) {
                     const a = document.createElement("a");
                     a.href = `data:${responseJson.mimeType};base64,${responseJson.fileContents}`;
                     console.log(a, responseJson);
@@ -37,21 +69,19 @@
                     a.click();
                     document.body.removeChild(a);
                 }
-            })
-    };
-    document.getElementById("setSlave").addEventListener("click", function () {
+            });
+    }
+    document.getElementById("setSlave").addEventListener("click", function() {
         state.slaveId = document.getElementById("slaveId").value;
         listDir(`/browse/${state.slaveId}/`);
-        // 
+        //
 
     });
-    document.getElementById("clearSlave").addEventListener("click", function () {
+    document.getElementById("clearSlave").addEventListener("click", function() {
 
         state.slaveId = document.getElementById("slaveId").value = "";
-
         dom.dirlisting.innerHTML = "";
-    })
-
+    });
 
     console.log(state); // TODO remove from prod. :)
-})()
+})();
