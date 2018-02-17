@@ -2,7 +2,7 @@
  * @module connections/slaves
  */
 
-/** Handle the connections from slaves (other synchronode instances serving files) 
+/** Handle the connections from slaves (other synchronode instances serving files)
  * - assign tokens
  * - listen for connections from them on websockets
  */
@@ -17,7 +17,7 @@ module.exports = function slaveConnections(args) {
     state.pendingTokens = new Set();
 
     app.get("/register", (req, res) => {
-        // TODO : register in state.slaveSockets 
+        // TODO : register in state.slaveSockets
 
         /** generate UUID */
         const uuid = require("../util/uuid");
@@ -30,9 +30,9 @@ module.exports = function slaveConnections(args) {
         logger.log("request for token fulfilled with", slaveConnectionId);
     });
 
-    app.ws("/ws/", function (ws, req) {
+    app.ws("/ws/", function(ws, req) {
         //logger.log("ws endpoint initialized", ws, req)
-        ws.on("message", function (message) {
+        ws.on("message", function(message) {
             logger.log("websocket message", message);
             if (typeof message === "string") {
                 // if it is a string, it is encapsulated in JSON
@@ -54,13 +54,18 @@ module.exports = function slaveConnections(args) {
                                     .end(JSON.stringify(messageFromSlave));
 
                             }
+                        } else if (action === "stat") {
+                            try {
+                                state.pendingRequestSockets.get(messageFromSlave.requestId).send(messageFromSlave);
+                            } catch (e) {
+                                logger.error("Couldn't relay stat response from slave", e, messageFromSlave);
+                            }
                         }
-                    }
-                    else if ((!token) || !state.pendingTokens.has(token)) {
+                    } else if ((!token) || !state.pendingTokens.has(token)) {
                         // TODO refactor this
 
                         sendMessage({
-                            error: "No token in request or token unavailable for registration."
+                            error: "No token in request or token unavailable for registration.",
                         });
                     } else { // there is a token to be registered
                         state.pendingTokens.delete(token);
@@ -69,9 +74,9 @@ module.exports = function slaveConnections(args) {
                         logger.log("new socket opened", token);
                     }
                 } catch (e) {
-                    logger.error("Malformed WebSocket string request - ", e)
+                    logger.error("Malformed WebSocket string request - ", e);
                 }
             }
         });
     });
-}
+};
