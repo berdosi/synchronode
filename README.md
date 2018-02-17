@@ -57,6 +57,9 @@ We are assuming that :
 	ProxyPass /ws/ ws://localhost:3000/ws/
 	ProxyPassReverse /ws/ ws://localhost:3000/ws/
 
+	ProxyPass /browserWs/ ws://localhost:3000/browserWs/
+	ProxyPassReverse /browserWs/ ws://localhost:3000/browserWs/
+
 	ProxyPass / http://localhost:3000/
 	ProxyPassReverse / http://localhost:3000/
 
@@ -87,6 +90,9 @@ We are assuming that :
 
     ProxyPass	/ws/ ws://localhost:3000/ws/
     ProxyPassReverse /ws/ ws://localhost:3000/ws/
+		
+		ProxyPass /browserWs/ ws://localhost:3000/browserWs/
+		ProxyPassReverse /browserWs/ ws://localhost:3000/browserWs/
 
     ProxyPass	/ http://localhost:3000/
     ProxyPassReverse	/ http://localhost:3000/
