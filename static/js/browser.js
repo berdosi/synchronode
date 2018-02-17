@@ -34,9 +34,9 @@
         fetch(path)
             .then(function(r) { return r.json(); })
             .then(function(responseJson) {
-                dom.dirlisting.innerHTML = "";
                 console.info("responseJson", responseJson);
                 if (responseJson.listing) {
+                    dom.dirlisting.innerHTML = "";
                     responseJson.listing.forEach(function(itemName) {
                         const itemRow = document.createElement("tr");
                         const itemIconCell = document.createElement("td");
@@ -66,10 +66,8 @@
                     const a = document.createElement("a");
                     a.href = `data:${responseJson.mimeType};base64,${responseJson.fileContents}`;
                     console.log(a, responseJson);
-                    document.body.appendChild(a);
                     a.download = responseJson.path.replace(/\/$/, "");
                     a.click();
-                    document.body.removeChild(a);
                 }
             });
     }
