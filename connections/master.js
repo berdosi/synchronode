@@ -37,7 +37,7 @@ module.exports = function connectMaster(args) {
                 ws.send(JSON.stringify({ token: responseObject.token }));
 
                 // lame keep alive
-                setInterval(() => ws.send(`{ "action": "keep-alive", "token": '${responseObject.token}' }`), 60000);
+                setInterval(() => ws.send(`{ "action": "keep-alive", "token": "${responseObject.token}" }`), 60000);
             });
 
             ws.on("message", function incoming(message) {
