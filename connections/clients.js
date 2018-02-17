@@ -28,10 +28,12 @@ module.exports = function clientConnections(args) {
      * @type {Map<String,ExpressRequest>}
      */
     state.pendingRequests = new Map();
+    state.pendingRequestSockets = new Map();
 
     app.get("/browse/*", (req, res, next) => {
         logger.log("new request", req.params);
-        const hostId = req.params[0].replace(/\/.*/, "");
+        const hostId = req.params[0].replace(/\/.*/, "").replace(/,.*/, "");
+        const browserSocketId = req.params[0].replace(/\/.*/, "").replace(/.*,/, "");
         const requestPath = req.params[0].replace(/[^\/]+\//, "");
 
         if (state.slaveSockets.has(hostId)) {
@@ -48,6 +50,7 @@ module.exports = function clientConnections(args) {
                 requestId: requestId,
             }));
             state.pendingRequests.set(requestId, res);
+            state.pendingRequestSockets.set(requestId, browserSocketId); //NOTE: may be empty string.
         } else {
             res.send(`{"error": 'not found'}`);
         }

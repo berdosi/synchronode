@@ -33,7 +33,12 @@ interface State {
    * @type {Map<string, WebSocket>}
    * @memberof State
    */
-  browserSockets: Map<string, WebSocket>
+  browserSockets: Map<string, WebSocket>,
+  /** Links a pending request ID to a websocket from browserSockets.
+   * As the slave fulfilling the request's asynchronous parts, 
+   * Master knows where to route the data using this Map. 
+   */
+  pendingRequestSockets: Map<string, WebSocket>,
 }
 
 interface Config {

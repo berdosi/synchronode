@@ -6,6 +6,7 @@
 (function() {
     "use strict";
     const state = {
+        connectionId: undefined,
         slaveId: undefined,
         socket: new WebSocket(`wss://${location.host}/browserWs/`),
     };
@@ -29,6 +30,9 @@
             || (/\.(txt|nfo)$/.test(fileName) && "fa-file-alt")
             || "fa-file");
         return i;
+    }
+    function userFeedback(message) {
+        console.info(message); // todo : replace with something less obtrusive
     }
 
     function listDir(path) {
@@ -74,7 +78,7 @@
     }
     document.getElementById("setSlave").addEventListener("click", function() {
         state.slaveId = document.getElementById("slaveId").value;
-        listDir(`/browse/${state.slaveId}/`);
+        listDir(`/browse/${state.slaveId}${state.connectionId ? ("," + state.connectionId) : ""}/`);
         //
 
     });
@@ -89,8 +93,12 @@
     });
 
     state.socket.addEventListener("message", function(event) {
-        // event.data
-        console.log("message from server:", event.data, event);
+        try {
+            const message = JSON.parse(event.data);
+            if (message.connectionId) {
+                state.connectionId = message.connectionId;
+            }
+        } catch (e) { userFeedback("couldn't parse message from server"); }
     });
 
     console.log(state); // TODO remove from prod. :)
