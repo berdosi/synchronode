@@ -7,6 +7,7 @@
     "use strict";
     const state = {
         slaveId: undefined,
+        socket: new WebSocket(`wss://${location.host}/browserWs/`),
     };
     const dom = {
         dirlisting: document.getElementById("dirlisting"),
@@ -81,6 +82,15 @@
 
         state.slaveId = document.getElementById("slaveId").value = "";
         dom.dirlisting.innerHTML = "";
+    });
+
+    state.socket.addEventListener("open", function(event) {
+        state.socket.send(JSON.parse({"action": "register"}));
+    });
+
+    state.socket.addEventListener("message", function(event) {
+        // event.data
+        console.log("message from server:", event.data, event);
     });
 
     console.log(state); // TODO remove from prod. :)
