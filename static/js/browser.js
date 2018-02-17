@@ -7,7 +7,6 @@
     "use strict";
     const state = {
         slaveId: undefined,
-        ws: new WebSocket(),
     };
     const dom = {
         dirlisting: document.getElementById("dirlisting"),
