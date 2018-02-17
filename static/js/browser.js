@@ -55,6 +55,9 @@
                         itemSizeCell.appendChild(itemSizeText);
                         itemDateCell.appendChild(itemDateText);
 
+                        [itemIconCell, itemNameCell, itemSizeCell, itemDateCell]
+                            .forEach(function addCell(cell) { itemRow.appendChild(cell); });
+
                         dom.dirlisting.appendChild(itemRow);
                         itemRow.addEventListener("click", function() {
                             listDir(path + itemName + "/");
