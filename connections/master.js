@@ -87,8 +87,7 @@ module.exports = function connectMaster(args) {
                                                         parseMessage,
                                                         {
                                                             action: "stat",
-                                                            error: statErr},
-                                                    );
+                                                            error: statErr});
                                             } else {
                                                 statResponse =
                                                     Object.assign(
@@ -96,8 +95,7 @@ module.exports = function connectMaster(args) {
                                                         parseMessage,
                                                         {
                                                             action: "stat",
-                                                            response: stats},
-                                                    );
+                                                            response: stats});
                                             }
                                             ws.send(JSON.stringify(statResponse));
                                         });
