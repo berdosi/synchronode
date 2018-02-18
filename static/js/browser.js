@@ -31,6 +31,7 @@
      */
     const state = {
         connectionId: "",
+        currentDir: "",
         dom: {
             dirListing: document.getElementById("dirListing"),
             /** @type {Map<string,EntryRow>} */
@@ -57,6 +58,23 @@
     document.getElementById("clearSlave").addEventListener("click", function() {
         state.slaveId = document.getElementById("slaveId").value = "";
         state.dom.dirListing.innerHTML = "";
+    });
+
+    // up one level
+    document.getElementById("upLevel").addEventListener("click", function() {
+        /* path looks like "/browse/slaveId,connectionId/path/elements/"
+           there is always a slash at the begining and at the end */
+        const currentPathElements = state.currentDir
+            .split("\/");
+        if (currentPathElements.length > 4) {
+            /* Get the directory one level up. As there is always a trailing slash,
+               (and thus an empty element), the last two elements are to be omitted,
+               and then the empty one added, again.
+            */
+            listDir(currentPathElements.slice(0, currentPathElements.length - 2).concat("").join("/"));
+        } else {
+            userFeedback("Cannot go up any more.");
+        }
     });
 
     // WebSocket event handlers
@@ -138,6 +156,7 @@
             .then(function handleResponseJson(responseJson) {
                 if (responseJson.listing) {
                     handleListing(responseJson, path);
+                    state.currentDir = path;
                 } else if (responseJson.fileContents) {
                     // small files can be transferred via normal GET requests.
                     downloadFileContents(responseJson);
