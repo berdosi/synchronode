@@ -7,3 +7,9 @@
 .content {
   padding: 1em;
 }
+thead {
+  background-color: white;
+}
+thead tr {
+  border-bottom: 1px solid black;
+}
