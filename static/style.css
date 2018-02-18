@@ -7,9 +7,29 @@
 .content {
   padding: 1em;
 }
-thead {
+#dirListingTable > thead {
   background-color: white;
 }
 thead tr {
   border-bottom: 1px solid black;
+}
+
+#dirListingTable {
+  max-width: 100%;
+}
+th.icon, td.icon {
+  width: 1em;
+}
+th.name, td.name {
+  min-width: 20em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  resize: horizontal;
+}
+th.date, td.date {
+  width: 7em;
+}
+th.size, td.size {
+  width: 4.5em;
 }

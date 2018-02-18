@@ -210,6 +210,11 @@
         itemSizeCell.appendChild(itemSizeText);
         itemDateCell.appendChild(itemDateText);
 
+        itemIconCell.classList.add("icon");
+        itemNameCell.classList.add("name");
+        itemSizeCell.classList.add("size");
+        itemDateCell.classList.add("date");
+
         [itemIconCell, itemNameCell, itemSizeCell, itemDateCell]
             .forEach(function addCell(cell) { itemRow.appendChild(cell); });
 
