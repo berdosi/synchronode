@@ -38,6 +38,10 @@
         },
         slaveId: "",
         socket: new WebSocket(`wss://${location.host}/browserWs/`),
+        sorting: {
+            lastSortedBy: "",
+            sortDirection: 1,
+        },
         /** @type {Map<string,StatResponse>} */
         statDataCache: new Map(),
     };
@@ -92,10 +96,19 @@
         } catch (e) { userFeedback("couldn't parse message from server"); }
     });
 
+    // make table sortable
     Array.prototype.slice.call( document.querySelectorAll("th")).forEach(function addTableHeaderEventHandler(th) {
         th.addEventListener("click", function tableHeaderClick() {
             const sortType = th.dataset.sortType;
             const fieldName = th.dataset.fieldName;
+
+            // invert sort direction, if sorting by the same field again
+            if (state.sorting.lastSortedBy === fieldName) {
+                state.sorting.sortDirection *= -1;
+            } else {
+                state.sorting.sortDirection = 1;
+            }
+            state.sorting.lastSortedBy = fieldName;
 
             Array.prototype.slice
                 .call(state.dom.dirListing.childNodes)
@@ -106,7 +119,7 @@
                     const anotherValue = (sortType === "numeric")
                         ? parseInt(another.dataset[fieldName], 10)
                         : another.dataset[fieldName];
-                    return (oneValue <= anotherValue) ? -1 : 1;
+                    return ((oneValue <= anotherValue) ? -1 : 1) * state.sorting.sortDirection;
                 })
                 .forEach(function(row) { state.dom.dirListing.appendChild(row); });
         });
@@ -251,7 +264,7 @@
         entryRow.itemSizeText.textContent = formatValue(size, "size");
 
         // setting data attributes on table row for sorting
-        entryRow.row.dataset.modTime = statData.response.mtimeMs;
+        entryRow.row.dataset.date = statData.response.mtimeMs;
         entryRow.row.dataset.size = size;
         entryRow.row.dataset.name = fileName;
     }
