@@ -124,7 +124,7 @@
             .then(function handleRequest(r) { return r.json(); })
             .then(function handleResponseJson(responseJson) {
                 if (responseJson.listing) {
-                    handleListing(responseJson);
+                    handleListing(responseJson, path);
                 } else if (responseJson.fileContents) {
                     // small files can be transferred via normal GET requests.
                     downloadFileContents(responseJson);
@@ -197,8 +197,9 @@
     /** Handle server responses containing directory listing:
      * - list their contents in the dirListing table
      * @param {ResponseJson} responseJson
+     * @param {string} path
      */
-    function handleListing(responseJson) {
+    function handleListing(responseJson, path) {
         state.dom.dirListing.innerHTML = "";
         responseJson.listing.forEach(function listItemHandler(itemName) {
             const itemRow = createItemRowElement(itemName);
