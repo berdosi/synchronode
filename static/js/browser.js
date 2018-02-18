@@ -124,7 +124,7 @@
             if (message.connectionId) {
                 state.connectionId = message.connectionId;
             } else {
-                if (event.data.action === "stat") {
+                if (message.action === "stat") {
                     updateEntry(event.data);
                 }
             }
