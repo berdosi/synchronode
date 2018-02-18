@@ -97,7 +97,7 @@
     });
 
     // make table sortable
-    Array.prototype.slice.call( document.querySelectorAll("th")).forEach(function addTableHeaderEventHandler(th) {
+    Array.prototype.slice.call(document.querySelectorAll(".sorter")).forEach(function addTableHeaderEventHandler(th) {
         th.addEventListener("click", function tableHeaderClick() {
             const sortType = th.dataset.sortType;
             const fieldName = th.dataset.fieldName;
