@@ -72,7 +72,9 @@
                     a.href = `data:${responseJson.mimeType};base64,${responseJson.fileContents}`;
                     console.log(a, responseJson);
                     a.download = responseJson.path.replace(/\/$/, "");
+                    document.body.appendChild(a);
                     a.click();
+                    document.body.removeChild(a);
                 }
             });
     }
