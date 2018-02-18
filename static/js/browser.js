@@ -170,7 +170,8 @@
                 }
             }
         };
-        xhr.send();
+        rq.send();
+
     }
 
     /** Create an icon based on file name.
