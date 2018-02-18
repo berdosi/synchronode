@@ -154,7 +154,7 @@
         const rq = new XMLHttpRequest();
         rq.open("GET", path, true);
         rq.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            if (rq.readyState === XMLHttpRequest.DONE && rq.status === 200) {
                 try {
                     (function handleResponseJson(responseJson) {
                         if (responseJson.listing) {
