@@ -49,8 +49,8 @@
         const modTimeString = new Date(statData.response.mtime);
 
         if (!isFile) { entryRow.iconElement.className = "far fa-folder"; }
-        entryRow.itemDateText = modTimeString;
-        entryRow.itemSizeText = size;
+        entryRow.itemDateText.textContent = modTimeString;
+        entryRow.itemSizeText.textContent = size;
     }
 
     function listDir(path) {
