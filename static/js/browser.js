@@ -151,17 +151,26 @@
      * @param {string} path
      */
     function listDir(path) {
-        fetch(path)
-            .then(function handleRequest(r) { return r.json(); })
-            .then(function handleResponseJson(responseJson) {
-                if (responseJson.listing) {
-                    handleListing(responseJson, path);
-                    state.currentDir = path;
-                } else if (responseJson.fileContents) {
-                    // small files can be transferred via normal GET requests.
-                    downloadFileContents(responseJson);
+        const rq = new XMLHttpRequest();
+        rq.open("GET", path, true);
+        rq.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                try {
+                    (function handleResponseJson(responseJson) {
+                        if (responseJson.listing) {
+                            handleListing(responseJson, path);
+                            state.currentDir = path;
+                        } else if (responseJson.fileContents) {
+                            // small files can be transferred via normal GET requests.
+                            downloadFileContents(responseJson);
+                        }
+                    })(JSON.parse(rq.responseText));
+                } catch (e) {
+                    userFeedback("Cannot parse response from server");
                 }
-            });
+            }
+        };
+        xhr.send();
     }
 
     /** Create an icon based on file name.
