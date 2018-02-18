@@ -99,6 +99,8 @@
             const message = JSON.parse(event.data);
             if (message.connectionId) {
                 state.connectionId = message.connectionId;
+            } else {
+                console.log("other message", event.data);
             }
         } catch (e) { userFeedback("couldn't parse message from server"); }
     });
