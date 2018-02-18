@@ -51,8 +51,7 @@ module.exports = function slaveConnections(args) {
 
                                 state.pendingRequests
                                     .get(messageFromSlave.requestId)
-                                    .end(JSON.stringify(messageFromSlave));
-
+                                    .json(messageFromSlave);
                             }
                         } else if (action === "stat") {
                             try {
