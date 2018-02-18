@@ -58,43 +58,70 @@ module.exports = function connectMaster(args) {
                                 ws.send(
                                     JSON.stringify(
                                         Object.assign({}, parseMessage, { slaveHail: "error when acccessing path" })));
-                            } else {
-                                let responseToMaster;
-                                if (file.isDirectory()) {
-                                    fs.readdir(path, (err2, readdirResponse) => {
-                                        if (err2) {
-                                            responseToMaster = Object.assign({}, parseMessage, { error: err2 });
-                                        } else {
-                                            responseToMaster =
-                                                Object.assign(
-                                                    {},
-                                                    parseMessage,
-                                                    {
-                                                        listing: readdirResponse,
-                                                    });
-                                        }
-
-                                        ws.send(JSON.stringify(responseToMaster));
-                                    });
-                                } else {
-                                    fs.readFile(path, (err2, readFileResponse) => {
-                                        if (err2) {
-                                            responseToMaster = Object.assign({}, parseMessage, { error: err2 });
-                                        } else {
-                                            responseToMaster = Object.assign(
+                                return;
+                            }
+                            let responseToMaster;
+                            if (file.isDirectory()) {
+                                fs.readdir(path, (readdirErr, readdirResponse) => {
+                                    if (readdirErr) {
+                                        responseToMaster = Object.assign({}, parseMessage, { error: readdirErr });
+                                    } else {
+                                        responseToMaster =
+                                            Object.assign(
                                                 {},
                                                 parseMessage,
                                                 {
-                                                    fileContents: readFileResponse.toString("base64"),
-                                                    mimeType: magic.detectFile(path),
+                                                    listing: readdirResponse,
                                                 });
-                                        }
-                                        ws.send(JSON.stringify(responseToMaster));
+                                    }
 
+                                    ws.send(JSON.stringify(responseToMaster));
+
+                                    readdirResponse.forEach(itemName => {
+                                        fs.stat(path + "/" + itemName, (statErr, stats) => {
+                                            let statResponse;
+                                            if (statErr) {
+                                                statResponse =
+                                                    Object.assign(
+                                                        {},
+                                                        parseMessage,
+                                                        {
+                                                            action: "stat",
+                                                            error: statErr},
+                                                    );
+                                            } else {
+                                                statResponse =
+                                                    Object.assign(
+                                                        {},
+                                                        parseMessage,
+                                                        {
+                                                            action: "stat",
+                                                            response: stats},
+                                                    );
+                                            }
+                                            ws.send(JSON.stringify(statResponse));
+                                        });
                                     });
-                                }
-                                // todo error handling if neither
+                                    // Stat the files in the drectory, send back responses as {action:stat}
+                                });
+                            } else {
+                                fs.readFile(path, (err2, readFileResponse) => {
+                                    if (err2) {
+                                        responseToMaster = Object.assign({}, parseMessage, { error: err2 });
+                                    } else {
+                                        responseToMaster = Object.assign(
+                                            {},
+                                            parseMessage,
+                                            {
+                                                fileContents: readFileResponse.toString("base64"),
+                                                mimeType: magic.detectFile(path),
+                                            });
+                                    }
+                                    ws.send(JSON.stringify(responseToMaster));
+
+                                });
                             }
+                            // todo error handling if neither
                         });
                     } else {
                         ws.send(
