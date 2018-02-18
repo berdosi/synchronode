@@ -125,7 +125,7 @@
                 state.connectionId = message.connectionId;
             } else {
                 if (message.action === "stat") {
-                    updateEntry(event.data);
+                    updateEntry(message);
                 }
             }
         } catch (e) { userFeedback("couldn't parse message from server"); }
