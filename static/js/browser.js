@@ -10,6 +10,7 @@
         dirListingMap: new Map(),
         slaveId: undefined,
         socket: new WebSocket(`wss://${location.host}/browserWs/`),
+        statDataCache: new Map(),
     };
     const dom = {
         dirlisting: document.getElementById("dirlisting"),
@@ -87,9 +88,16 @@
                                 itemSizeText: itemSizeText,
                                 row: itemRow,
                             });
+
                         dom.dirlisting.appendChild(itemRow);
 
+                        if (state.statDataCache.has(itemName)) {
+                            updateEntry(state.statDataCache.get(itemName));
+                        }
+
                         itemRow.addEventListener("click", function() {
+                            // clear statData Cache (or else stale entries will be used)
+                            state.statDataCache.clear();
                             listDir(path + itemName + "/");
                         });
                     });
@@ -125,6 +133,7 @@
                 state.connectionId = message.connectionId;
             } else {
                 if (message.action === "stat") {
+                    state.statDataCache.set(message.filePath.replace(/.*\//, ""), message);
                     updateEntry(message);
                 }
             }
