@@ -95,6 +95,7 @@ module.exports = function connectMaster(args) {
                                                         parseMessage,
                                                         {
                                                             action: "stat",
+                                                            filePath: path + "/" + itemName,
                                                             response: stats});
                                             }
                                             ws.send(JSON.stringify(statResponse));

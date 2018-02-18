@@ -38,7 +38,7 @@ interface State {
    * As the slave fulfilling the request's asynchronous parts, 
    * Master knows where to route the data using this Map. 
    */
-  pendingRequestSockets: Map<string, WebSocket>,
+  pendingRequestSockets: Map<string, string>,
 }
 
 interface Config {

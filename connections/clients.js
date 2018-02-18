@@ -44,13 +44,15 @@ module.exports = function clientConnections(args) {
              */
             logger.log("has hostId");
             const requestId = uuid();
+            state.pendingRequestSockets.set(requestId, browserSocketId); //NOTE: may be empty string.
+
             state.slaveSockets.get(hostId).send(JSON.stringify({
                 action: "browse",
                 path: requestPath,
                 requestId: requestId,
             }));
             state.pendingRequests.set(requestId, res);
-            state.pendingRequestSockets.set(requestId, browserSocketId); //NOTE: may be empty string.
+
         } else {
             res.send(`{"error": 'not found'}`);
         }
