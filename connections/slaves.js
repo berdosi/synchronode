@@ -56,14 +56,10 @@ module.exports = function slaveConnections(args) {
                             }
                         } else if (action === "stat") {
                             try {
-                                logger.log(
-                                    "requestId", messageFromSlave.requestId,
-                                    "browserSocketId",
-                                    state.pendingRequestSockets.get(messageFromSlave.requestId));
-                                logger.log("browserSocket", state.browserSockets.get(
-                                    state.pendingRequestSockets.get(messageFromSlave.requestId)));
                                 state.browserSockets.get(
-                                    state.pendingRequestSockets.get(messageFromSlave.requestId)).send(messageFromSlave);
+                                    state.pendingRequestSockets
+                                    .get(messageFromSlave.requestId))
+                                .send(JSON.stringify(messageFromSlave));
                             } catch (e) {
                                 logger.error("Couldn't relay stat response from slave", e, messageFromSlave);
                             }
