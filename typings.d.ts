@@ -27,7 +27,18 @@ interface State {
    * @type {Map<string, Express.Request>}
    * @memberof State
    */
-  pendingRequests: Map<string, Express.Request>
+  pendingRequests: Map<string, Express.Request>,
+  /** Keeps track on connections from browsers. When asynchronous information arrives 
+   * from slaves on a requestId, it is sent to the respective browserSocket.
+   * @type {Map<string, WebSocket>}
+   * @memberof State
+   */
+  browserSockets: Map<string, WebSocket>,
+  /** Links a pending request ID to a websocket from browserSockets.
+   * As the slave fulfilling the request's asynchronous parts, 
+   * Master knows where to route the data using this Map. 
+   */
+  pendingRequestSockets: Map<string, string>,
 }
 
 interface Config {

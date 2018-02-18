@@ -3,16 +3,50 @@
   <head>
     <meta charset="utf-8">
     <title>SynchroNode</title>
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <link 
+      rel="stylesheet" 
+      href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" 
+      integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" 
+      crossorigin="anonymous">
+    <link 
+      rel="stylesheet" 
+      href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
+    <link 
+      rel="stylesheet" 
+      href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <p>
-      <label>Slave ID: <input placeholder="slave ID" id="slaveId"></label>
-      <button id="setSlave">Set</button>
-      <button id="clearSlave">Clear</button>
-    </p>  
-    <hr>
-    <div id="dirlisting"></div>
+    <div class="pure-menu pure-menu-horizontal">
+      <a href="#" class="pure-menu-heading pure-menu-link">SynchroNode</a>
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item">
+          <p>
+            <label>Slave ID: <input placeholder="slave ID" id="slaveId"></label>
+            <button id="setSlave" class="pure-button">Set</button>
+            <button id="clearSlave" class="pure-button">Clear</button>
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div class="content">
+      <div class="pure-g">
+        <div class="pure-u-1">
+          <table class="pure-table pure-table-striped">
+            <thead>
+              <tr>
+                <th><i class="far fa-file"></i></th>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Modified</th>
+              </tr>
+            </thead>
+            <tbody  id="dirlisting">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <script src="js/browser.js"></script>
   </body>
 </html>
