@@ -56,7 +56,12 @@ module.exports = function slaveConnections(args) {
                             }
                         } else if (action === "stat") {
                             try {
-                                logger.log("socket", state.pendingRequestSockets.get(messageFromSlave.requestId));
+                                logger.log(
+                                    "requestId", messageFromSlave.requestId,
+                                    "browserSocketId",
+                                    state.pendingRequestSockets.get(messageFromSlave.requestId));
+                                logger.log("browserSocket", state.browserSockets.get(
+                                    state.pendingRequestSockets.get(messageFromSlave.requestId)));
                                 state.browserSockets.get(
                                     state.pendingRequestSockets.get(messageFromSlave.requestId)).send(messageFromSlave);
                             } catch (e) {

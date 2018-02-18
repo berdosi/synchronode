@@ -117,7 +117,6 @@ module.exports = function connectMaster(args) {
                                             });
                                     }
                                     ws.send(JSON.stringify(responseToMaster));
-
                                 });
                             }
                             // todo error handling if neither
@@ -127,10 +126,8 @@ module.exports = function connectMaster(args) {
                             JSON.stringify(
                                 Object.assign({}, parseMessage, { slaveHail: "no path found in request" })));
                     }
-
                 }
             });
-
         });
     });
 
