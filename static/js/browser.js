@@ -91,7 +91,7 @@
     });
 
     state.socket.addEventListener("open", function(event) {
-        state.socket.send(JSON.parse({"action": "register"}));
+        state.socket.send(JSON.stringify({"action": "register"}));
     });
 
     state.socket.addEventListener("message", function(event) {
