@@ -28,20 +28,22 @@ shareRoot (string): path to the folder relative to which the paths are shared
 ```JSON
 {
 	"port": 80,
-	"master": "example.com",
+	"master": "example.org",
 	"shareRoot": "/home/billg/Documents",
 }
 ```
 
+# Reverse Proxy Configuration
+Below examples can be used to configure the master. They assume that :
+- you are running synchronode behind a reverse proxy, which takes care of the certificates for the HTTPS connection (Let's Encrypt's Certbot was used)
+- the master is reachable on *https://example.org*
+- the synchronode instance is listening on port 3000
+## Apache
 ### Example: Apache reverse proxy configuration on master
 Assuming Apache does the reverse proxying, these site configurations do the job. 
-We are assuming that :
-- HTTP requests are redirected to use HTTPS
-- Let's Encrypt is set up for the domain
-- The master is reachable via *example.org* via standard ports (80, 443)
-- The master's Synchronode instance is set up to use port 3000.  
+We are assuming that HTTP requests are redirected to use HTTPS
 
-#### HTTP redirecting to HTTPS
+### HTTP redirecting to HTTPS
 ```
 <VirtualHost *:80>
 	# Redirect traffic to HTTPS
@@ -74,7 +76,7 @@ We are assuming that :
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 ```
 
-#### HTTPS traffic redirected to localhost:3000 
+### HTTPS traffic redirected to localhost:3000 
 ```
 <IfModule mod_ssl.c>
   <VirtualHost *:443>
@@ -105,6 +107,50 @@ We are assuming that :
     Include /etc/letsencrypt/options-ssl-apache.conf
   </VirtualHost>
 </IfModule>
+```
+## nginx
+### Reverse Proxy Configuration for nginx
+```
+server {        
+		# redirect to HTTPS                                                                    
+    if ($host = example.org) {                                                  
+        return 301 https://$host$request_uri;                                          
+    }                                                            
+		listen 80 default_server;                                                      
+    listen [::]:80 default_server;                                                 
+                                                                                       
+    return 404;                                                                                
+}                                    
+
+server {
+	listen example.org:443 ssl; 
+	server_name example.org;
+	ssl_certificate /etc/letsencrypt/live/example.org/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/example.org/privkey.pem;
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+	# normal HTTP requests
+	location / { 
+			proxy_bind 127.0.0.1;
+			proxy_pass http://127.0.0.1:3000;
+	}
+	# websocket requests coming from other synchronode instances
+	location /ws {
+			proxy_bind 127.0.0.1;
+			proxy_pass http://127.0.0.1:3000;       
+			proxy_http_version 1.1;
+			proxy_set_header Upgrade $http_upgrade; 
+			proxy_set_header Connection "upgrade";  
+	}
+	# websocket requests coming from the browser
+	location /browserWs {
+			proxy_bind 127.0.0.1;
+			proxy_pass http://127.0.0.1:3000;
+			proxy_http_version 1.1;
+			proxy_set_header Upgrade $http_upgrade;
+			proxy_set_header Connection "upgrade";
+	}
+}
 ```
 
 ## Endpoints
